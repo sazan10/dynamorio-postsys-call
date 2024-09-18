@@ -41,6 +41,7 @@ jobs:
         ls -l
     - name: Simulate Detach
       run: |
+        set +x
         for i in {1..100}; do
           echo "Run $i"
           ./DynamoRIO-Linux-10.91.19860/bin64/drrun -c DynamoRIO-Linux-10.91.19860/samples/bin64/libmemtrace_simple.so -- ./myapp
