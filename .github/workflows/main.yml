@@ -1,0 +1,35 @@
+name: Race Condition Test
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up environment
+      run: |
+        sudo apt-get update
+        sudo apt-get install gcc g++ pthreads
+    - name: Download DynamoRIO
+      run: |
+        # wget https://github.com/DynamoRIO/dynamorio/releases/download/release_6_0_0/DynamoRIO-Linux-6.0.0-6.tar.gz
+        # tar -xzf DynamoRIO-Linux-6.0.0-6.tar.gz
+        wget https://github.com/DynamoRIO/dynamorio/releases/download/cronbuild-10.91.19860/DynamoRIO-Linux-10.91.19860.tar.gz
+        tar -xzf DynamoRIO-Linux-10.91.19860.tar.gz
+    - name: Build the race condition client
+      run: |
+        gcc -g -pthread -o race_client race_client.c
+
+    - name: Run Test with DynamoRIO
+      run: |
+        echo "Running the test program under DynamoRIO..."
+        set +e
+        # Run the test program multiple times to reproduce the signal loss issue
+        for i in {1..100}; do
+          echo "Run $i"
+          ./DynamoRIO-Linux-10.91.19860/bin64/drrun -- ./race_client
+        done
