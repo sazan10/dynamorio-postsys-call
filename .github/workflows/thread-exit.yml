@@ -1,5 +1,5 @@
 name: Reproduce Detach Crash
-# 2601: fix thread exit race on attach
+# 2605,  2601: fix thread exit race on attach
 on:
   push:
     branches:
