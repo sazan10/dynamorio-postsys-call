@@ -27,7 +27,7 @@ jobs:
     - name: Run Test with DynamoRIO
       run: |
         echo "Running the test program under DynamoRIO..."
-        set +e
+        # set +e
         # Run the test program multiple times to reproduce the signal loss issue
         for i in {1..100}; do
           echo "Run $i"
