@@ -32,5 +32,5 @@ jobs:
         set +x
         for i in {1..100}; do
           echo "Run $i"
-          ./DynamoRIO-Linux-10.91.19860/bin64/drrun -- ./myapp
+          ./DynamoRIO-Linux-10.91.19860/bin64/drrun -t drcachesim -- ./myapp
         done
