@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define NUM_THREADS 100
+#define NUM_THREADS 1000
 
 void* thread_func(void* arg) {
     printf("Thread %ld is running\n", (long)arg);
