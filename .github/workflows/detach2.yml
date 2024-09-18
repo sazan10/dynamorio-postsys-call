@@ -17,24 +17,27 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y cmake gcc g++
-    
-    - name: Build DynamoRIO
+    - name: Download DynamoRIO
       run: |
-        git clone https://github.com/DynamoRIO/dynamorio.git
-        cd dynamorio
-        mkdir build
-        cd build
-        cmake .. -DCMAKE_BUILD_TYPE=Release
-        make -j$(nproc)
-
+        # wget https://github.com/DynamoRIO/dynamorio/releases/download/release_6_0_0/DynamoRIO-Linux-6.0.0-6.tar.gz
+        # tar -xzf DynamoRIO-Linux-6.0.0-6.tar.gz
+        wget https://github.com/DynamoRIO/dynamorio/releases/download/cronbuild-10.91.19860/DynamoRIO-Linux-10.91.19860.tar.gz
+        tar -xzf DynamoRIO-Linux-10.91.19860.tar.gz
     - name: Build Multithreaded Application
       run: |
         gcc -o myapp myapp.c -lpthread
 
     - name: Run Application with DynamoRIO
       run: |
-        dynamorio/build/bin64/drrun -- ./myapp
-
+        ./DynamoRIO-Linux-10.91.19860/bin64/drrun -- ./myapp
+    - name: Build sample
+      run: | 
+        cd DynamoRIO-Linux-10.91.19860/samples
+        mkdir build
+        cd build
+        cmake ..
+        make
+        ls -l
     - name: Simulate Detach
       run: |
-        dynamorio/build/bin64/drrun -c dynamorio/build/samples/bin/libsample.so -- ./myapp
+        ./DynamoRIO-Linux-10.91.19860/bin64/drrun -c $DYNAMORIO_DIR/samples/bin/libsample.so -- ./myapp
