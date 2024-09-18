@@ -13,7 +13,7 @@ jobs:
     - name: Set up environment
       run: |
         sudo apt-get update
-        sudo apt-get install gcc g++ pthreads
+        sudo apt-get install gcc g++
     - name: Download DynamoRIO
       run: |
         # wget https://github.com/DynamoRIO/dynamorio/releases/download/release_6_0_0/DynamoRIO-Linux-6.0.0-6.tar.gz
