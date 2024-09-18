@@ -1,38 +1,41 @@
-name: Reproduce Detach Crash
-# 2907 static signal
-on:
-  push:
-    branches:
-      - main
+
+name: Reproduce "Virtual timer expired" on ARM
+
+on: [push, pull_request]
 
 jobs:
-  build-and-test:
+  build_and_test:
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-    
-    - name: Install Dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y cmake gcc g++
-    - name: Download DynamoRIO
-      run: |
-        # wget https://github.com/DynamoRIO/dynamorio/releases/download/release_6_0_0/DynamoRIO-Linux-6.0.0-6.tar.gz
-        # tar -xzf DynamoRIO-Linux-6.0.0-6.tar.gz
-        wget https://github.com/DynamoRIO/dynamorio/releases/download/cronbuild-10.91.19860/DynamoRIO-Linux-10.91.19860.tar.gz
-        tar -xzf DynamoRIO-Linux-10.91.19860.tar.gz
-    - name: clone Dynamorio
-      run: |
-        git clone https://github.com/DynamoRIO/dynamorio.git
-    - name: Build Multithreaded Application
-      run: |
-        gcc -o staticSignal dynamorio/suite/tests/api/static_signal.c 
-    - name: Run Application with DynamoRIO
-      run: |
-        # set +x
-        for i in {1..10}; do
-          echo "Run $i"
-          ./DynamoRIO-Linux-10.91.19860/bin64/drrun -t drcachesim -- ./staticSignal
-        done
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y qemu qemu-user qemu-user-static binfmt-support
+          sudo apt-get install -y build-essential cmake gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf
+          
+      - name: Set up ARM QEMU emulation
+        run: |
+          docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+          echo ':arm:M::\x7fELF\x01\x01\x01\x61:\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff:armhf:' | sudo tee /proc/sys/fs/binfmt_misc/register
+          
+      - name: Build DynamoRIO for ARM
+        run: |
+          git clone https://github.com/DynamoRIO/dynamorio.git
+          cd dynamorio
+          mkdir build && cd build
+          cmake -DCMAKE_TOOLCHAIN_FILE=../make/toolchain-linux-armhf.cmake ..
+          make -j4
+
+      - name: Build the drtaint client
+        run: |
+          cd dynamorio/build
+          make drtaint
+
+      - name: Run api.static_signal test with drtaint under ARM emulation
+        run: |
+          cd dynamorio/build
+          qemu-arm -L /usr/arm-linux-gnueabihf bin32/drrun -debug -prof_pcs -c libdrtaint.so -- ls
