@@ -37,6 +37,7 @@ jobs:
         cd build
         cmake ..
         make
+        cd bin
         ls -l
     - name: Simulate Detach
       run: |
