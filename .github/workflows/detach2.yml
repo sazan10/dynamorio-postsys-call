@@ -1,0 +1,40 @@
+name: Reproduce Detach Crash
+# 3535 safe_read magic unstable during detach from threaded app
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+    
+    - name: Install Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y cmake gcc g++
+    
+    - name: Build DynamoRIO
+      run: |
+        git clone https://github.com/DynamoRIO/dynamorio.git
+        cd dynamorio
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_BUILD_TYPE=Release
+        make -j$(nproc)
+
+    - name: Build Multithreaded Application
+      run: |
+        gcc -o myapp myapp.c -lpthread
+
+    - name: Run Application with DynamoRIO
+      run: |
+        dynamorio/build/bin64/drrun -- ./myapp
+
+    - name: Simulate Detach
+      run: |
+        dynamorio/build/bin64/drrun -c dynamorio/build/samples/bin/libsample.so -- ./myapp
