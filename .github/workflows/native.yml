@@ -24,16 +24,14 @@ jobs:
         # tar -xzf DynamoRIO-Linux-6.0.0-6.tar.gz
         wget https://github.com/DynamoRIO/dynamorio/releases/download/cronbuild-10.91.19860/DynamoRIO-Linux-10.91.19860.tar.gz
         tar -xzf DynamoRIO-Linux-10.91.19860.tar.gz
-    - name: clone Dynamorio
-      run: |
-        git clone https://github.com/DynamoRIO/dynamorio.git
+
     - name: Build Multithreaded Application
       run: |
         gcc -o native native-thread.c 
     - name: Run Application with DynamoRIO
       run: |
         # set +x
-        for i in {1..10}; do
+        for i in {1..100}; do
           echo "Run $i"
           ./DynamoRIO-Linux-10.91.19860/bin64/drrun -t drcachesim -- ./native
         done
