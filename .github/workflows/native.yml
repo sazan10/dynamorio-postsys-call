@@ -35,5 +35,5 @@ jobs:
         # set +x
         for i in {1..10}; do
           echo "Run $i"
-          ./DynamoRIO-Linux-10.91.19860/bin64/drrun -detach_on_exit -t drcachesim -- ./native
+          ./DynamoRIO-Linux-10.91.19860/bin64/drrun -t drcachesim -- ./native
         done
