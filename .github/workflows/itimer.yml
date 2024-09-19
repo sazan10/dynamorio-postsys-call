@@ -1,4 +1,4 @@
-name: Reproduce Detach Crash
+name: Reproduce  itimer detach
 # 3249: i#2270 itimer detach: Remove alarm handlers before synching with threads.
 on:
   push:
@@ -31,5 +31,5 @@ jobs:
         set +x
         for i in {1..100}; do
           echo "Run $i"
-          ./DynamoRIO-Linux-10.91.19860/bin64/drrun -t drcachesim -- ./itimer_detach.c
+          ./DynamoRIO-Linux-10.91.19860/bin64/drrun -t drcachesim -- ./itimer
         done
