@@ -5,6 +5,7 @@
 #include <unistd.h>
 
 #define NUM_THREADS 653
+#define RUN_DURATION 10  // Run for 10 seconds
 
 // Function to be run by each thread
 void* thread_func(void* arg) {
@@ -14,13 +15,16 @@ void* thread_func(void* arg) {
     return NULL;
 }
 
-// Signal handler for SIGSEGV
+// Signal handler for SIGTERM or SIGALRM to terminate the program
 void signal_handler(int signum) {
-    printf("Received signal %d\n", signum);
+    printf("Received signal %d, terminating application.\n", signum);
+    exit(0);  // Exit the application, triggering DynamoRIO detachment
 }
 
 int main() {
-    signal(SIGSEGV, signal_handler);  // Install signal handler
+    signal(SIGSEGV, signal_handler);   // Handle segmentation fault signals
+    signal(SIGALRM, signal_handler);   // Handle alarm signals
+    signal(SIGTERM, signal_handler);   // Handle termination signals
 
     pthread_t threads[NUM_THREADS];
 
@@ -31,7 +35,10 @@ int main() {
 
     printf("Application running with %d threads\n", NUM_THREADS);
 
-    // Keep running indefinitely
+    // Set an alarm to terminate the program after RUN_DURATION seconds
+    alarm(RUN_DURATION);
+
+    // Keep running indefinitely until the signal handler terminates the app
     while (1) {
         sleep(1);
     }
