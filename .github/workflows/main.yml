@@ -38,4 +38,4 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: dynamorio-report
-        path: './dyna_logs*'
+        path: './dyna_logs/*'
