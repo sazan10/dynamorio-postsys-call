@@ -32,7 +32,7 @@ jobs:
 
         for i in {1..100}; do
           echo "Run $i"
-          /tmp/DynamoRIO-Linux-10.91.19860/bin64/drrun -logdir "./dyna_logs/" -- ./race_client 
+          /tmp/DynamoRIO-Linux-10.91.19860/bin64/drrun -logdir "./dyna_logs/" -- ./race_client > "./dyna_logs/$i.log" 2>&1
         done
     - name: Upload dynamorio reports
       uses: actions/upload-artifact@v4
