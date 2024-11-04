@@ -17,8 +17,8 @@ jobs:
       run: |
         # wget https://github.com/DynamoRIO/dynamorio/releases/download/release_6_0_0/DynamoRIO-Linux-6.0.0-6.tar.gz
         # tar -xzf DynamoRIO-Linux-6.0.0-6.tar.gz
-        wget https://github.com/DynamoRIO/dynamorio/releases/download/cronbuild-10.91.19860/DynamoRIO-Linux-10.91.19860.tar.gz
-        tar -xzf DynamoRIO-Linux-10.91.19860.tar.gz
+        wget -P /tmp/ https://github.com/DynamoRIO/dynamorio/releases/download/cronbuild-10.91.19860/DynamoRIO-Linux-10.91.19860.tar.gz && tar -xzf /tmp/DynamoRIO-Linux-10.91.19860.tar.gz -C /tmp/
+
     - name: Build the race condition client
       run: |
         gcc -g -pthread -o race_client race_client.c
@@ -32,7 +32,7 @@ jobs:
 
         for i in {1..100}; do
           echo "Run $i"
-          ./DynamoRIO-Linux-10.91.19860/bin64/drrun -- ./race_client -logdir "./dyna_logs/"
+          /tmp/DynamoRIO-Linux-10.91.19860/bin64/drrun -- ./race_client -logdir "./dyna_logs/"
         done
     - name: Upload dynamorio reports
       uses: actions/upload-artifact@v4
