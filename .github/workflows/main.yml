@@ -28,7 +28,7 @@ jobs:
         echo "Running the test program under DynamoRIO..."
         set +e
         # Run the test program multiple times to reproduce the signal loss issue
-        mkdir -p ./dyna_logs
+        mkdir -p ./dyna_logs/
 
         for i in {1..100}; do
           echo "Run $i"
